@@ -5,6 +5,8 @@ import SplashScreen from './SplashScreen'; //  SplashScreen
 import SignInScreen from './SignInScreen';
 import SignUpScreen from './SignUpScreen';
 import Job from './Job';
+import JobProfile from './JobProfile';
+import JobCompany from './JobCompany';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +18,8 @@ export default function App() {
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
         <Stack.Screen name="Job" component={Job} />
+        <Stack.Screen name="JobProfile" component={JobProfile} />
+        <Stack.Screen name="JobCompany" component={JobCompany} />
 
 
       </Stack.Navigator>

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
-const JobProfileScreen = ({ navigation }) => {
+const JobProfileScreen = () => {
     const jobData = {
         title: 'Software Developer',
         company: 'ABC Tech Solutions',
@@ -10,21 +10,13 @@ const JobProfileScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>{jobData.title}</Text>
-            <Text style={styles.company}>{jobData.company}</Text>
-            <Text style={styles.location}>{jobData.location}</Text>
-            <Text style={styles.description}>{jobData.description}</Text>
-            <Button
-                title="Profile Profile"
-                onPress={() => navigation.navigate('JobProfile')}
-            />
-            <Button
-                title="Company Profile"
-                onPress={() => navigation.navigate('JobCompany')}
-            />
-        </View>
-    );
+        <View style= { styles.container } >
+        <Text style={ styles.title }> { jobData.title } < /Text>
+            < Text style = { styles.company } > { jobData.company } < /Text>
+                < Text style = { styles.location } > { jobData.location } < /Text>
+                    < Text style = { styles.description } > { jobData.description } < /Text>
+                        < /View>
+  );
 };
 
 const styles = StyleSheet.create({
