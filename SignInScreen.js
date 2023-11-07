@@ -43,8 +43,8 @@ export default function SignInScreen() {
 
                 {/* Sign In Button */}
                 <TouchableOpacity
-                    style={styles.signInButtonSignInScreen} onPress={() => navigation.navigate('Jobs')} 
-                    onPress={handleSignIn}
+                    style={styles.signInButtonSignInScreen}
+                    onPress={() => navigation.navigate('Job')} // Navigate to the "Job" screen
                 >
                     <Text style={styles.signInButtonText}>Sign In</Text>
                 </TouchableOpacity>

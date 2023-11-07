@@ -4,8 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SplashScreen from './SplashScreen'; //  SplashScreen 
 import SignInScreen from './SignInScreen';
 import SignUpScreen from './SignUpScreen';
-
-
+import Job from './Job';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +15,7 @@ export default function App() {
         <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ title: 'SplashScreen' }} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+        <Stack.Screen name="Job" component={Job} />
 
 
       </Stack.Navigator>
@@ -23,5 +23,4 @@ export default function App() {
   );
 }
 //cd "C:\Users\nihal\OneDrive - Northumbria University - Production Azure AD\Documents\Year 3\final year project\libyanJobs\LibyanJobsProject"
-
 
