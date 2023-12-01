@@ -1,8 +1,7 @@
 import React from 'react';
 import { View, Image, Text, TouchableOpacity } from 'react-native';
-import CompanyLogo from './assets/OIP.jpg';
-import styles from './styles';
-//import { Dropdown } from 'react-native-material-dropdown';
+import CompanyLogo from '../assets/OIP.jpg'; // Adjust the path based on your project structure
+import styles from '../styles';
 
 export default function HomeScreen({ navigation }) {
     return (

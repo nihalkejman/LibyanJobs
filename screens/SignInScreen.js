@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
-import styles from './styles';
-import LinkedInLogo from './assets/LinkedInLogo.jpg'; // Import the LinkedIn logo image
+import styles from '../styles';
+import LinkedInLogo from '../assets/LinkedInLogo.jpg'; // Adjust the path based on your project structure
 import { useNavigation } from '@react-navigation/native';
 
 export default function SignInScreen() {
     const navigation = useNavigation(); // Get the navigation object
 
     const handleSignIn = () => {
-        navigation.navigate('Job'); // Navigate to the "Job" screen
+        navigation.navigate('JobScreen'); // Navigate to the "JobScreen" screen
     };
 
     return (
@@ -44,7 +44,7 @@ export default function SignInScreen() {
                 {/* Sign In Button */}
                 <TouchableOpacity
                     style={styles.signInButtonSignInScreen}
-                    onPress={() => navigation.navigate('Job')} // Navigate to the "Job" screen
+                    onPress={() => navigation.navigate('JobScreen')} // Navigate to the "Job" screen
                 >
                     <Text style={styles.signInButtonText}>Sign In</Text>
                 </TouchableOpacity>

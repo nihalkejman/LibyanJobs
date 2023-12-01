@@ -23,6 +23,14 @@ const JobProfileScreen = ({ navigation }) => {
                 title="Company Profile"
                 onPress={() => navigation.navigate('JobCompany')}
             />
+            <Button
+                title="Setting"
+                onPress={() => navigation.navigate('Setting')}
+            />
+            <Button
+                title="Job SCREEN"
+                onPress={() => navigation.navigate('JobScreen')}
+            />
         </View>
     );
 };
