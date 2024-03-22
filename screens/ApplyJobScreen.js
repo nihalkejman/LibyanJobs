@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    ScrollView,
-    TouchableOpacity,
-    Alert,
-    StyleSheet,
-} from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert,
+    KeyboardAvoidingView, SafeAreaView, StyleSheet, Dimensions} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
+import { db, auth } from '../firebaseConfig';
 
-const ApplyJobScreen = () => {
+
+const ApplyJobScreen = ({ navigation, route }) => {
+    const { userId, jobId } = route.params; 
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -32,64 +29,100 @@ const ApplyJobScreen = () => {
         }
     };
 
-    const handleSubmit = () => {
-        const formData = {
-            firstName,
-            lastName,
-            email,
-            message,
-            phoneNumber,
-            currentResidence,
-            currentJob,
-            selectedCV,
-        };
+    const handleSubmit = async () => {
+        try {
+            // Upload CV file to storage (if selected)
+            let selectedCVUrl = '';
+            if (selectedCV) {
+                const fileRef = storage.ref().child(`cv/${userId}/${selectedCV.name}`);
+                await fileRef.put(selectedCV);
+                selectedCVUrl = await fileRef.getDownloadURL();
+            }
 
-        // For demonstration purposes, show an alert with the submitted data
-        Alert.alert('Form Submitted!', JSON.stringify(formData), [
-            { text: 'OK', onPress: () => console.log('OK Pressed') },
-        ]);
+            // Construct job application data
+            const formData = {
+                userId,
+                jobId,
+                firstName,
+                lastName,
+                email,
+                message,
+                phoneNumber,
+                currentResidence,
+                currentJob,
+                selectedCV: selectedCVUrl, // Store CV URL
+            };
+
+            // Add job application data to Firestore
+            await db.collection('jobApplications').doc().set(formData);
+
+            // Show success message
+            Alert.alert('Application Submitted!', 'Your application has been submitted successfully.');
+
+            // Reset form fields
+            setFirstName('');
+            setLastName('');
+            setEmail('');
+            setMessage('');
+            setPhoneNumber('');
+            setCurrentResidence('');
+            setCurrentJob('');
+            setSelectedCV(null);
+        } catch (error) {
+            console.error('Error submitting application:', error);
+            Alert.alert('Error', 'Failed to submit application. Please try again later.');
+        }
     };
 
     return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+            >
         <ScrollView contentContainerStyle={styles.container}>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.titleText}>Apply for a Job</Text>
+                    </View>
             <View style={styles.formGroup}>
-                <Text style={styles.label}>First Name</Text>
+                <Text style={styles.label}>First Name *</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your first name"
+                    placeholder="Input first name"
                     value={firstName}
-                    onChangeText={(text) => setFirstName(text)}
+                    onChangeText={setFirstName}
                 />
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Last Name</Text>
+                <Text style={styles.label}>Last Name *</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your last name"
+                    placeholder="Input Last Name"
                     value={lastName}
-                    onChangeText={(text) => setLastName(text)}
+                    onChangeText={setLastName}
                 />
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Email Address</Text>
+                <Text style={styles.label}>Email *</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your email address"
+                    placeholder="Email address"
                     value={email}
-                    onChangeText={(text) => setEmail(text)}
+                    onChangeText={setEmail}
                     keyboardType="email-address"
                 />
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Message</Text>
+                <Text style={styles.label}>Message *</Text>
                 <TextInput
                     style={[styles.input, styles.multilineInput]}
-                    placeholder="Enter your message"
+                    placeholder="Input text"
                     value={message}
-                    onChangeText={(text) => setMessage(text)}
+                    onChangeText={setMessage}
                     multiline
                 />
             </View>
@@ -98,35 +131,35 @@ const ApplyJobScreen = () => {
                 <Text style={styles.label}>Phone Number</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your phone number"
+                    placeholder="Input Last Name"
                     value={phoneNumber}
-                    onChangeText={(text) => setPhoneNumber(text)}
+                    onChangeText={setPhoneNumber}
                     keyboardType="phone-pad"
                 />
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Current Residence</Text>
+                <Text style={styles.label}>Current residence *</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your current residence"
+                    placeholder="Input text"
                     value={currentResidence}
-                    onChangeText={(text) => setCurrentResidence(text)}
+                    onChangeText={setCurrentResidence}
                 />
             </View>
 
             <View style={styles.formGroup}>
-                <Text style={styles.label}>Current Job</Text>
+                <Text style={styles.label}>Current job</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Enter your current job"
+                    placeholder="input text"
                     value={currentJob}
-                    onChangeText={(text) => setCurrentJob(text)}
+                    onChangeText={setCurrentJob}
                 />
             </View>
 
             <TouchableOpacity style={styles.uploadButton} onPress={openDocumentPicker}>
-                <Text style={styles.uploadButtonText}>Upload CV</Text>
+                <Text style={styles.uploadButtonText}>Upload CV *</Text>
             </TouchableOpacity>
 
             {selectedCV && (
@@ -143,62 +176,103 @@ const ApplyJobScreen = () => {
                 disabled={isSubmitting}
             >
                 <Text style={styles.submitButtonText}>
-                    {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                    {isSubmitting ? 'Submitting...' : 'Send application'}
                 </Text>
             </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()} 
+                        style={styles.cancelButton}
+                    >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
         </ScrollView>
+        </KeyboardAvoidingView>
+        </SafeAreaView>
+
     );
 };
 
 const styles = StyleSheet.create({
+    titleContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    titleText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+
     container: {
         padding: 20,
+        backgroundColor: 'white',
     },
     formGroup: {
-        marginBottom: 20,
+        marginBottom: 16,
     },
     label: {
         fontSize: 16,
-        marginBottom: 5,
-        color: '#3498db', // Add a hint of color to labels
+        fontWeight: '600',
+        color: '#212121',
+        marginBottom: 4,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
+        borderColor: '#e0e0e0',
+        borderRadius: 6,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
         fontSize: 16,
+        backgroundColor: '#f7f7f7',
+        marginBottom: 8,
     },
     multilineInput: {
-        height: 100,
-    },
+        minHeight: 100,
+        textAlignVertical: 'top',
+    }, 
     uploadButton: {
-        backgroundColor: '#3498db',
-        borderRadius: 5,
-        padding: 15,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        borderRadius: 6,
+        padding: 12,
         alignItems: 'center',
-        marginTop: 10,
+        justifyContent: 'center',
+        marginTop: 16,
+        backgroundColor: '#f7f7f7',
     },
     uploadButtonText: {
-        color: 'white',
         fontSize: 16,
+        fontWeight: '600',
+        color: '#212121',
     },
     selectedCVText: {
-        marginTop: 10,
         fontSize: 16,
-        color: '#2ecc71', // Add a hint of color to indicate success
+        color: '#757575',
+        marginTop: 8,
     },
     submitButton: {
-        backgroundColor: '#2ecc71',
-        borderRadius: 5,
-        padding: 15,
+        backgroundColor: '#FFA500',
+        borderRadius: 6,
+        padding: 12,
         alignItems: 'center',
-        marginTop: 20,
+        justifyContent: 'center',
+        marginTop: 16,
     },
     submitButtonText: {
-        color: 'white',
         fontSize: 16,
+        fontWeight: '600',
+        color: 'white',
+    },
+    cancelButton: {
+        marginTop: 12, 
+    },
+    cancelButtonText: {
+        fontSize: 16,
+        color: '#9e9e9e', 
+        textAlign: 'center',
     },
 });
+
 
 export default ApplyJobScreen;

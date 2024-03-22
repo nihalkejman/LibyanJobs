@@ -1,14 +1,12 @@
-// screens/SecurityScreen.js
+import React, { useState } from 'react';
+import { View, Text, TextInput, Switch, Button, StyleSheet } from 'react-native';
 
-import React from 'react';
-import { View, Text, StyleSheet, Switch, Button } from 'react-native';
 
 const SecurityScreen = () => {
     const [password, setPassword] = useState('');
     const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
     const handleSaveChanges = () => {
-        // Implement logic to save changes to the backend or local storage
         console.log('Security changes saved:', { password, twoFactorAuth });
     };
 

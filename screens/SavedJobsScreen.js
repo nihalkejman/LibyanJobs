@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
 
 const SavedJobsScreen = ({ navigation }) => {
-    // Dummy data for saved jobs
     const [savedJobsData, setSavedJobsData] = useState([
         { id: '1', title: 'Software Engineer', company: 'Tech Co', location: 'San Francisco' },
         { id: '2', title: 'UX/UI Designer', company: 'Design Studio', location: 'New York' },
         { id: '3', title: 'Data Scientist', company: 'Data Corp', location: 'Chicago' },
-        // Add more dummy data as needed
     ]);
 
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -33,7 +31,6 @@ const SavedJobsScreen = ({ navigation }) => {
     );
 
     const handleRemoveJob = (jobId) => {
-        // Implement logic to remove the job from the saved list
         const updatedJobs = savedJobsData.filter(job => job.id !== jobId);
         setSavedJobsData(updatedJobs);
     };

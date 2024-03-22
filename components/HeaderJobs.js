@@ -1,214 +1,137 @@
 import React, { useState } from 'react';
-import { View,Text,TouchableOpacity, TouchableWithoutFeedback, Button, Keyboard, ActivityIndicator,TextInput,} from 'react-native';
-import { Icon } from 'react-native-elements';
-import DropDownPicker from 'react-native-dropdown-picker';
-import _ from 'lodash';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import RNPickerSelect from 'react-native-picker-select';
 
-const HeaderSection = ({navigation}) => {
-    const [searchVisible, setSearchVisible] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [selectedJobCategory, setSelectedJobCategory] = useState(null);
+const HeaderJobs = () => {
+    const [jobLocation, setJobLocation] = useState('');
+    const [jobCategory, setJobCategory] = useState('');
+    
 
-    const locations = [
-        { label: 'New York', value: 'new_york' },
-        { label: 'San Francisco', value: 'san_francisco' },
-        { label: 'Los Angeles', value: 'los_angeles' },
-        { label: 'Chicago', value: 'chicago' },
-    ];
-
-    const jobCategories = [
-        { label: 'Software Developer', value: 'software_developer' },
-        { label: 'UX/UI Designer', value: 'ux_ui_designer' },
-        { label: 'Data Scientist', value: 'data_scientist' },
-        // Add more job categories as needed
-    ];
-
-    const handleSearch = _.debounce(async (query) => {
-        setIsLoading(true);
-
-        try {
-            console.log('Search query:', query);
-            console.log('Selected Location:', selectedLocation);
-            console.log('Selected Job Category:', selectedJobCategory);
-
-            // Your search logic here...
-
-        } catch (error) {
-            console.error('Search failed:', error);
-            // Handle error feedback to the user
-        } finally {
-            setIsLoading(false);
-        }
-    }, 300);
-
-    const toggleSearch = () => {
-        setSearchVisible(!searchVisible);
-        setSearchQuery('');
-    };
-
-    const handleOutsideClick = () => {
-        setSearchVisible(false);
-        Keyboard.dismiss();
-    };
+    const jobLocations = ['New York', 'Los Angeles', 'San Francisco', 'Chicago', 'Miami'].sort();
+    const jobCategories = ['Technology', 'Healthcare', 'Education', 'Finance', 'Hospitality'].sort();
 
     return (
-        <TouchableWithoutFeedback onPress={handleOutsideClick}>
-            <View style={styles.headerContainer}>
-                <View style={styles.topContainer}>
-                    <View style={styles.userContainer}>
-                        <Icon name="person" type="font-awesome-5" size={20} color="#517fa4" />
-                        <Text style={styles.userName}>Nihal Kejman</Text>
-                    </View>
-                    <TouchableOpacity
-                        style={styles.savedJobsContainer}
-                        onPress={() => {
-                            navigation.navigate('SavedJobsScreen'); 
-                        }}
-                    >
-                        <Icon name="bookmark" type="font-awesome-5" size={20} color="#517fa4" />
-                        <Text style={styles.savedJobsText}>My Saved Jobs</Text>
-                    </TouchableOpacity>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.profileSection}>
+                    <Icon name="user-circle-o" size={24} color="black" />
+                    <Text style={styles.profileText}>Nihal Kejman</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.savedJobsSection}>
+                    <Icon name="bookmark-o" size={24} color="red" />
+                    <Text style={styles.savedJobsText}>My saved jobs</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.searchSection}>
+                <Icon name="search" size={20} color="grey" style={styles.searchIcon} />
+                <TextInput
+                    placeholder="Search"
+                    style={styles.searchInput}
+                    clearButtonMode="while-editing"
+                />
+            </View>
+            <View style={styles.filterContainer}>
+                <View style={styles.filterSection}>
+                    <RNPickerSelect
+                        placeholder={{ label: 'Select job location', value: null }}
+                        items={jobLocations.map(location => ({ label: location, value: location }))}
+                        value={jobLocation}
+                        onValueChange={(value) => setJobLocation(value)}
+                        style={pickerSelectStyles}
+                    />
                 </View>
-                <View style={styles.bottomContainer}>
-                    <View style={styles.searchDropdownContainer}>
-                        <TouchableOpacity onPress={toggleSearch}>
-                            <View style={styles.searchContainer}>
-                                {searchVisible ? (
-                                    <View style={styles.searchInputContainer}>
-                                        <TextInput
-                                            placeholder="Search..."
-                                            style={styles.searchInput}
-                                            onChangeText={(text) => setSearchQuery(text)}
-                                            value={searchQuery}
-                                            autoFocus
-                                        />
-                                        {isLoading ? (
-                                            <ActivityIndicator style={styles.loadingIndicator} size="small" color="#517fa4" />
-                                        ) : (
-                                            <TouchableOpacity onPress={() => handleSearch(searchQuery)}>
-                                                <Text style={styles.searchButtonText}>Search</Text>
-                                            </TouchableOpacity>
-                                        )}
-                                    </View>
-                                ) : (
-                                    <Icon name="search" type="font-awesome-5" size={20} color="#517fa4" />
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                        <View style={styles.dropdownContainer}>
-                            <DropDownPicker
-                                items={locations}
-                                placeholder="Select a location"
-                                defaultValue={selectedLocation}
-                                containerStyle={styles.dropdown}
-                                style={styles.dropdownStyle}
-                                itemStyle={styles.dropdownItemStyle}
-                                dropDownStyle={styles.dropdownDropStyle}
-                                onChangeItem={(item) => setSelectedLocation(item.value)}
-                            />
-                            <DropDownPicker
-                                items={jobCategories}
-                                placeholder="Select a job category"
-                                defaultValue={selectedJobCategory}
-                                containerStyle={styles.dropdown}
-                                style={styles.dropdownStyle}
-                                itemStyle={styles.dropdownItemStyle}
-                                dropDownStyle={styles.dropdownDropStyle}
-                                onChangeItem={(item) => setSelectedJobCategory(item.value)}
-                            />
-                        </View>
-                    </View>
+                <View style={styles.filterSection}>
+                    <RNPickerSelect
+                        placeholder={{ label: 'Select job category', value: null }}
+                        items={jobCategories.map(category => ({ label: category, value: category }))}
+                        value={jobCategory}
+                        onValueChange={(value) => setJobCategory(value)}
+                        style={pickerSelectStyles}
+                    />
                 </View>
             </View>
-        </TouchableWithoutFeedback>
+        </View>
     );
 };
 
-const styles = {
-    headerContainer: {
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        backgroundColor: '#fff', // Adjust the background color as needed
+const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+        fontSize: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 10,
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+        borderRadius: 5,
+        color: 'black',
+        paddingRight: 30, 
     },
-    topContainer: {
+    inputAndroid: {
+        fontSize: 16,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+        borderRadius: 5,
+        color: 'black',
+        paddingRight: 30, 
+    },
+});
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#F8F8F8',
+        paddingTop: 10,
+        paddingBottom: 20,
+    },
+    header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        width: '100%',
-        marginBottom: 10,
+        paddingHorizontal: 15,
+        alignItems: 'center',
+        marginBottom: 15,
     },
-    userContainer: {
+    profileSection: {
         flexDirection: 'row',
         alignItems: 'center',
     },
-    userName: {
-        marginLeft: 5,
-        fontSize: 16,
+    profileText: {
+        marginLeft: 10,
+        fontWeight: 'bold',
     },
-    savedJobsContainer: {
+    savedJobsSection: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     savedJobsText: {
         marginLeft: 5,
-        fontSize: 16,
+        color: 'red',
+        fontWeight: 'bold',
     },
-    bottomContainer: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '100%',
-    },
-    searchDropdownContainer: {
+    searchSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
+        backgroundColor: '#FFFFFF',
+        borderRadius: 10,
+        padding: 5,
+        paddingHorizontal: 10,
+        marginHorizontal: 15,
     },
-    searchContainer: {
-        marginLeft: 10,
+    searchIcon: {
         marginRight: 10,
-    },
-    searchInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
     },
     searchInput: {
         flex: 1,
-        fontSize: 16,
-        marginRight: 10,
     },
-    searchButtonText: {
-        color: '#517fa4',
-        fontSize: 16,
-    },
-    loadingIndicator: {
-        marginRight: 10,
-    },
-    dropdownContainer: {
+    filterContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 10,
+        marginTop: 15,
+        paddingHorizontal: 15,
     },
-    dropdown: {
-        height: 40,
-        width: 150,
+    filterSection: {
+        flex: 1,
     },
-    dropdownStyle: {
-        backgroundColor: '#fafafa',
-    },
-    dropdownItemStyle: {
-        justifyContent: 'flex-start',
-    },
-    dropdownDropStyle: {
-        backgroundColor: '#fafafa',
-    },
-};
+});
 
-export default HeaderSection;
-
+export default HeaderJobs;

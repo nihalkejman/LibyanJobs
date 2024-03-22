@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, Picker } from 'react-native';
+import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import * as DocumentPicker from 'expo-document-picker';
 
-const AccountScreen = () => {
+const AccountScreen = ({ onUpdateName, navigation }) => {
   const [name, setName] = useState('John Doe');
-  const [location, setLocation] = useState('City'); // Change this to a list of locations if needed
+  const [location, setLocation] = useState('City');
   const [language, setLanguage] = useState('English');
   const [resume, setResume] = useState(null);
+  const [newName, setNewName] = useState('');
 
   const handleSaveChanges = () => {
-    // Implement logic to save changes to the backend or local storage
-    console.log('Changes saved:', { name, location, language, resume });
+    onUpdateName(newName);
+    navigation.navigate('JobScreen', { updatedName: newName });
   };
 
   const handleChooseFile = async () => {
@@ -29,22 +31,22 @@ const AccountScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>Profile Information</Text>
         <View style={styles.inputContainer}>
-          <Text>Name:</Text>
+          <Text style={styles.label}>Name:</Text>
           <TextInput
             style={styles.input}
-            value={name}
-            onChangeText={(text) => setName(text)}
+            value={newName}
+            onChangeText={setNewName}
+            placeholder="Enter your name"
           />
         </View>
         <View style={styles.inputContainer}>
-          <Text>Location:</Text>
+          <Text style={styles.label}>Location:</Text>
           <Picker
             style={styles.picker}
             selectedValue={location}
             onValueChange={(itemValue) => setLocation(itemValue)}
           >
             <Picker.Item label="City" value="City" />
-            {/* Add other location options */}
           </Picker>
         </View>
       </View>
@@ -52,7 +54,7 @@ const AccountScreen = () => {
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>General</Text>
         <View style={styles.inputContainer}>
-          <Text>Language:</Text>
+          <Text style={styles.label}>Language:</Text>
           <Picker
             style={styles.picker}
             selectedValue={language}
@@ -63,13 +65,17 @@ const AccountScreen = () => {
           </Picker>
         </View>
         <View style={styles.inputContainer}>
-          <Text>Resume Upload:</Text>
-          <Button title="Choose File" onPress={handleChooseFile} />
+          <Text style={styles.label}>Resume Upload:</Text>
+          <Pressable style={styles.button} onPress={handleChooseFile}>
+            <Text style={styles.buttonText}>Choose File</Text>
+          </Pressable>
           {resume && <Text>File selected: {resume}</Text>}
         </View>
       </View>
 
-      <Button title="Save Changes" onPress={handleSaveChanges} />
+      <Pressable style={styles.saveButton} onPress={handleSaveChanges}>
+        <Text style={styles.buttonText}>Save Changes</Text>
+      </Pressable>
     </View>
   );
 };
@@ -92,14 +98,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+  label: {
+    width: 100,
+    fontWeight: 'bold',
+  },
   input: {
     flex: 1,
     marginLeft: 10,
     borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
     padding: 8,
   },
   picker: {
     flex: 1,
+    marginLeft: 10,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 5,
+    elevation: 3,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  saveButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#28a745',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 5,
+    elevation: 3,
   },
 });
 

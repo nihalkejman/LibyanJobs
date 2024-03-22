@@ -1,128 +1,170 @@
-// components/MoreJobs.js
-import React from 'react';
-import { Card, Text, Button, Icon } from 'react-native-elements';
-import { StyleSheet, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { Entypo, MaterialCommunityIcons, FontAwesome } from '@expo/vector-icons';
 
-const MoreJobs = () => {
-    // Dummy data for more jobs
-    const moreJobs = [
-        {
-            title: 'Product Manager',
-            location: 'Los Angeles',
-            type: 'Full Time',
-        },
-        {
-            title: 'Graphic Designer',
-            location: 'Miami',
-            type: 'Part Time',
-        },
-        // Add more job entries as needed
-    ];
+const MoreJobs = ({ navigation }) => {
+    const [moreJobs, setMoreJobs] = useState([]);
+
+    useEffect(() => {
+        const fetchDataFromFirestore = async () => {
+            try {
+                const jobsCollection = collection(db, 'moreJobs');
+                const querySnapshot = await getDocs(jobsCollection);
+                const fetchedJobs = [];
+
+                querySnapshot.forEach((doc) => {
+                    const jobData = doc.data();
+                    const job = {
+                        id: doc.id,
+                        ...jobData,
+                    };
+                    fetchedJobs.push(job);
+                });
+
+                setMoreJobs(fetchedJobs);
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
+        };
+
+        fetchDataFromFirestore();
+    }, []);
+
+    const handleViewMore = (job) => {
+        navigation.navigate('JobProfile', { job });
+    };
+
+    const MoreJobItem = ({ job }) => (
+        <TouchableOpacity style={styles.jobItem} onPress={() => handleViewMore(job)}>
+            <Image source={{ uri: job.logo }} style={styles.logo} />
+            <View style={styles.jobDetails}>
+                <Text style={styles.jobTitle}>{job.name}</Text>
+                <Text style={styles.jobInfo}>{job.location} - {job.type}</Text>
+                <View style={styles.actionRow}>
+                    <TouchableOpacity style={styles.actionButton}>
+                        <MaterialCommunityIcons name="email-outline" size={16} color="#757575" />
+                        <Text style={styles.actionText}>Send to friends</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.actionButton}>
+                        <FontAwesome name="bookmark-o" size={16} color="#757575" />
+                        <Text style={styles.actionText}>Save</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.actionButton}>
+                        <MaterialCommunityIcons name="share-outline" size={16} color="#757575" />
+                        <Text style={styles.actionText}>Share</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            <View style={styles.rightActions}>
+                <TouchableOpacity style={styles.saveButton}>
+                    <FontAwesome name="bookmark-o" size={20} color="#757575" />
+                </TouchableOpacity>
+                <View style={styles.moreButton}>
+                    <Entypo name="chevron-right" size={24} color="#757575" />
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+
+
 
     return (
-        <View>
-            <Text style={styles.heading}>More Jobs</Text>
-            <Button
-                title="See More"
-                type="clear"
-                titleStyle={styles.seeMoreText}
-                onPress={() => {
-                    // Add your logic for handling "See More" button press
-                }}
+        <View style={styles.container}>
+            <Text style={styles.header}>More Jobs</Text>
+            <FlatList
+                data={moreJobs}
+                renderItem={({ item }) => <MoreJobItem job={item} onViewMore={handleViewMore} />}
+                keyExtractor={item => item.id}
+                ListFooterComponent={() => (
+                    <TouchableOpacity style={styles.seeMoreButton} onPress={handleViewMore}>
+                        <Text style={styles.seeMoreText}>See More</Text>
+                    </TouchableOpacity>
+                )}
             />
-            {moreJobs.map((job, index) => (
-                <Card key={index} containerStyle={styles.cardContainer}>
-                    <View style={styles.jobDetailsContainer}>
-                        <Text style={styles.jobDetailText}>Title: {job.title}</Text>
-                        <Text style={styles.jobDetailText}>Location: {job.location}</Text>
-                        <Text style={styles.jobDetailText}>Type: {job.type}</Text>
-                    </View>
-                    <View style={styles.actionsContainer}>
-                        <Button
-                            icon={<Icon name="envelope" type="font-awesome-5" size={15} color="white" />}
-                            title="Send"
-                            buttonStyle={styles.actionButton}
-                            titleStyle={styles.buttonTitle}
-                        />
-                        <Button
-                            icon={<Icon name="bookmark" type="font-awesome-5" size={15} color="white" />}
-                            title="Save"
-                            buttonStyle={styles.actionButton}
-                            titleStyle={styles.buttonTitle}
-                        />
-                        <Button
-                            icon={<Icon name="share" type="font-awesome-5" size={15} color="white" />}
-                            title="Share"
-                            buttonStyle={styles.actionButton}
-                            titleStyle={styles.buttonTitle}
-                        />
-                    </View>
-                    <View style={styles.saveIconContainer}>
-                        <Icon name="bookmark" type="font-awesome-5" size={30} color="#517fa4" />
-                    </View>
-                    <Button
-                        title="View More"
-                        type="clear"
-                        titleStyle={styles.viewMoreText}
-                        containerStyle={styles.viewMoreContainer}
-                    />
-                </Card>
-            ))}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    heading: {
-        fontSize: 24,
+    container: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        paddingVertical: 16,
+    },
+    header: {
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 10,
+        color: '#333',
+        paddingHorizontal: 16,
+        marginBottom: 16,
     },
-    cardContainer: {
-        borderRadius: 10,
-        elevation: 3, // for Android
-        padding: 15,
-        marginBottom: 15,
-    },
-    jobDetailsContainer: {
-        marginTop: 10,
-    },
-    jobDetailText: {
-        fontSize: 16,
-        marginBottom: 5,
-    },
-    actionsContainer: {
+    jobItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
+        alignItems: 'flex-start',
+        padding: 16,
+        marginHorizontal: 16,
+        marginBottom: 16,
+        backgroundColor: '#F9F9F9',
+        borderRadius: 10,
+        elevation: 1,
+    },
+    logo: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    jobDetails: {
+        flex: 1,
+        marginLeft: 16,
+        justifyContent: 'center',
+    },
+    jobTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    jobInfo: {
+        fontSize: 14,
+        color: '#999',
+        marginVertical: 4,
+    },
+    actionRow: {
+        flexDirection: 'row',
+        marginTop: 16,
     },
     actionButton: {
-        backgroundColor: '#517fa4',
-        flex: 1, // Distribute available space equally among buttons
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
         alignItems: 'center',
-        paddingVertical: 8,
-        marginHorizontal: 5,
+        marginRight: 16,
     },
-    buttonTitle: {
-        fontSize: 12,
+    actionText: {
+        marginLeft: 4,
+        fontSize: 14,
+        color: '#757575',
     },
-    saveIconContainer: {
-        position: 'absolute',
-        top: 10, // Adjusted position
-        right: 15,
+    rightActions: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
-    viewMoreContainer: {
-        position: 'absolute',
-        bottom: 40, // Adjusted position
-        right: 5,
+    saveButton: {
+        marginBottom: 8,
     },
-    viewMoreText: {
-        color: '#517fa4',
+    moreButton: {
+      
+    },
+    seeMoreButton: {
+        alignItems: 'center',
+        backgroundColor: '#ECEFF1',
+        paddingVertical: 10,
+        marginHorizontal: 16,
+        borderRadius: 5,
+    },
+    seeMoreText: {
         fontSize: 16,
+        color: '#333',
     },
 });
 
 export default MoreJobs;
-

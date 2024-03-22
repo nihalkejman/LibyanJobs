@@ -1,52 +1,98 @@
-// screens/SettingsScreen.js
-
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Switch,
+    ScrollView
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import NavBar from '../components/NavBar';
 
 const SettingsScreen = () => {
     const navigation = useNavigation();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const toggleDarkMode = () => setIsDarkMode(previousState => !previousState);
 
     const settingsOptions = [
-        'Account',
-        'Security',
-        'Data Privacy',
-        'Packages',
-        'Notifications',
-        'Help Centre',
-        'Privacy Policy',
-        'Dark Mode',
-        'About the App',
-        'Logout',
+        { label: 'Account', icon: 'account-circle' },
+        { label: 'Security', icon: 'security' },
+        { label: 'Data Privacy', icon: 'privacy-tip' },
+        { label: 'Accessibility', icon: 'accessible' },
+        { label: 'Notifications', icon: 'notifications' },
+        { label: 'Help Center', icon: 'help' },
+        { label: 'Privacy Policy', icon: 'policy' },
+        { label: 'About the App', icon: 'info' },
+        { label: 'Logout', icon: 'logout' },
     ];
 
     const handleOptionPress = (option) => {
-        switch (option) {
+        switch (option.label) {
             case 'Account':
                 navigation.navigate('AccountSetting');
                 break;
             case 'Security':
                 navigation.navigate('SecuritySetting');
                 break;
-            // Add other cases for different options
+            case 'Data Privacy':
+                navigation.navigate('DataprivacySetting');
+                break;
+            case 'Packages':
+                navigation.navigate('PackagesSetting');
+                break;
+            case 'Notifications':
+                navigation.navigate('NotificationSetting');
+                break;
+            case 'Help Centre':
+                navigation.navigate('HelpCentreSettings');
+                break;
+            case 'Privacy Policy':
+                navigation.navigate('PrivacyPolicySetting');
+                break;
+            case 'Logout':
+                navigation.navigate('SplashScreen');
+                break;
             default:
-                console.log(`Pressed ${option}`);
+                console.log(`Pressed ${option.label}`);
         }
     };
 
-
-
     return (
         <View style={styles.container}>
-            {settingsOptions.map((option, index) => (
-                <TouchableOpacity
-                    key={index}
-                    style={styles.option}
-                    onPress={() => handleOptionPress(option)}
-                >
-                    <Text>{option}</Text>
-                </TouchableOpacity>
-            ))}
+            <ScrollView style={styles.scrollView}>
+                {settingsOptions.map((option, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={styles.option}
+                        onPress={() => handleOptionPress(option)}
+                    >
+                        <View style={styles.optionContent}>
+                            <Icon name={option.icon} size={24} color="#555" />
+                            <Text style={styles.optionText}>{option.label}</Text>
+                        </View>
+                        <Icon name="chevron-right" size={24} color="#555" />
+                    </TouchableOpacity>
+                ))}
+
+                {}
+                <View style={styles.option}>
+                    <View style={styles.optionContent}>
+                        <Icon name="dark-mode" size={24} color="#555" />
+                        <Text style={styles.optionText}>Dark Mode</Text>
+                    </View>
+                    <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={isDarkMode ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleDarkMode}
+                        value={isDarkMode}
+                    />
+                </View>
+            </ScrollView>
+            <NavBar />
         </View>
     );
 };
@@ -54,12 +100,28 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        backgroundColor: '#ffffff',
+    },
+    scrollView: {
+        flex: 1,
     },
     option: {
-        paddingVertical: 15,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
         borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        borderBottomColor: '#e0e0e0',
+    },
+    optionContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    optionText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: '#555555',
     },
 });
 

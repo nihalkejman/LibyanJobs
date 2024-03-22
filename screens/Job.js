@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import AccountSetting from './Settings/AccountSetting'; 
 
 const JobProfileScreen = ({ navigation }) => {
     const jobData = {
@@ -9,28 +10,26 @@ const JobProfileScreen = ({ navigation }) => {
         description: 'We are looking for a talented software developer to join our team and work on exciting projects. Apply now!',
     };
 
+    const [userName, setUserName] = useState('John Doe');
+
+    const handleUpdateName = (newName) => {
+        setUserName(newName);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{jobData.title}</Text>
             <Text style={styles.company}>{jobData.company}</Text>
             <Text style={styles.location}>{jobData.location}</Text>
             <Text style={styles.description}>{jobData.description}</Text>
-            <Button
-                title="Profile Profile"
-                onPress={() => navigation.navigate('JobProfile')}
-            />
-            <Button
-                title="Company Profile"
-                onPress={() => navigation.navigate('JobCompany')}
-            />
-            <Button
-                title="Setting"
-                onPress={() => navigation.navigate('Setting')}
-            />
-            <Button
-                title="Job SCREEN"
-                onPress={() => navigation.navigate('JobScreen')}
-            />
+
+    
+            <Text>Hello, {userName}</Text>
+
+          
+            <AccountSetting onUpdateName={handleUpdateName} />
+
+      
         </View>
     );
 };

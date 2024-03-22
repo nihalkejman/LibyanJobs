@@ -1,17 +1,14 @@
-// screens/NotificationScreen.js
-
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch } from 'react-native';
+import { View, Text, StyleSheet, Switch, Button} from 'react-native';
 
-const NotificationScreen = () => {
+const NotificationSetting = () => {
   const [allowJobSuggestions, setAllowJobSuggestions] = useState(true);
   const [jobSuggestions, setJobSuggestions] = useState(true);
   const [savedJobs, setSavedJobs] = useState(true);
-  const [recommendedJobs, setRecommendedJobs] = useState(true);
+  const [recommendedJobs, setRecommendedJobs] = useState(true);//
   const [careerGuidance, setCareerGuidance] = useState(true);
 
   const handleSaveChanges = () => {
-    // Implement logic to save changes to the backend or local storage
     console.log('Notification changes saved:', {
       allowJobSuggestions,
       jobSuggestions,
@@ -85,4 +82,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotificationScreen;
+export default NotificationSetting;
