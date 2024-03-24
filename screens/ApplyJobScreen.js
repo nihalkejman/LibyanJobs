@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert,
     KeyboardAvoidingView, SafeAreaView, StyleSheet, Dimensions} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
-import { db, auth } from '../firebaseConfig';
+import { db, setDoc, doc, auth, storage} from '../firebaseConfig';
 
 
 const ApplyJobScreen = ({ navigation, route }) => {
@@ -17,6 +17,8 @@ const ApplyJobScreen = ({ navigation, route }) => {
     const [currentJob, setCurrentJob] = useState('');
     const [selectedCV, setSelectedCV] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({}); // State for form validation errors
+
 
     const openDocumentPicker = async () => {
         try {
@@ -28,17 +30,51 @@ const ApplyJobScreen = ({ navigation, route }) => {
             console.log('Error choosing file:', err);
         }
     };
+    console.log('db object:', db);
+
+    const validateForm = () => {
+        const newErrors = {}; // Object to hold new errors
+
+        if (!firstName.trim()) {
+            newErrors.firstName = 'First name is required';
+        }
+
+        if (!lastName.trim()) {
+            newErrors.lastName = 'Last name is required';
+        }
+
+        if (!email.trim()) {
+            newErrors.email = 'Email is required';
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            newErrors.email = 'Email is invalid';
+        }
+
+        if (!message.trim()) {
+            newErrors.message = 'Message is required';
+        }
+
+        setErrors(newErrors); // Update errors state with new errors
+        return Object.keys(newErrors).length === 0;
+    };
+
 
     const handleSubmit = async () => {
+        if (!validateForm()) {
+            Alert.alert('Empty Field Error', 'Please fill out all required fields.');
+            return; // Stop submission if validation fails
+        }
+
+        
         try {
+            let selectedCVUrl = ''; // Initialize selectedCVUrl variable
+
             // Upload CV file to storage (if selected)
-            let selectedCVUrl = '';
             if (selectedCV) {
                 const fileRef = storage.ref().child(`cv/${userId}/${selectedCV.name}`);
                 await fileRef.put(selectedCV);
-                selectedCVUrl = await fileRef.getDownloadURL();
+                selectedCVUrl = await fileRef.getDownloadURL(); // Set selectedCVUrl to the URL of the uploaded CV file
             }
-
+            
             // Construct job application data
             const formData = {
                 userId,
@@ -50,11 +86,12 @@ const ApplyJobScreen = ({ navigation, route }) => {
                 phoneNumber,
                 currentResidence,
                 currentJob,
-                selectedCV: selectedCVUrl, // Store CV URL
+                selectedCV: selectedCVUrl, // Use selectedCVUrl as the URL of the uploaded CV file
             };
 
-            // Add job application data to Firestore
-            await db.collection('jobApplications').doc().set(formData);
+            // Create a reference to a new document with an auto-generated ID within the 'jobApplications' collection
+            const docRef = doc(db, 'jobApplications', 'new-document-id'); // Replace 'new-document-id' with an actual document ID
+            await setDoc(docRef, formData); // Set the document data
 
             // Show success message
             Alert.alert('Application Submitted!', 'Your application has been submitted successfully.');
@@ -74,6 +111,7 @@ const ApplyJobScreen = ({ navigation, route }) => {
         }
     };
 
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView
@@ -85,47 +123,52 @@ const ApplyJobScreen = ({ navigation, route }) => {
                     <View style={styles.titleContainer}>
                         <Text style={styles.titleText}>Apply for a Job</Text>
                     </View>
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>First Name *</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Input first name"
-                    value={firstName}
-                    onChangeText={setFirstName}
-                />
-            </View>
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>First Name *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Input first name"
+                            value={firstName}
+                            onChangeText={setFirstName}
+                        />
+                        {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
+                    </View>
 
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>Last Name *</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Input Last Name"
-                    value={lastName}
-                    onChangeText={setLastName}
-                />
-            </View>
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>Last Name *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Input Last Name"
+                            value={lastName}
+                            onChangeText={setLastName}
+                        />
+                        {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
+                    </View>
 
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>Email *</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email address"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                />
-            </View>
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>Email *</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email address"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                        />
+                        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+                    </View>
 
-            <View style={styles.formGroup}>
-                <Text style={styles.label}>Message *</Text>
-                <TextInput
-                    style={[styles.input, styles.multilineInput]}
-                    placeholder="Input text"
-                    value={message}
-                    onChangeText={setMessage}
-                    multiline
-                />
-            </View>
+                    <View style={styles.formGroup}>
+                        <Text style={styles.label}>Message *</Text>
+                        <TextInput
+                            style={[styles.input, styles.multilineInput]}
+                            placeholder="Input text"
+                            value={message}
+                            onChangeText={setMessage}
+                            multiline
+                        />
+                        {errors.message && <Text style={styles.errorText}>{errors.message}</Text>}
+                    </View>
+
 
             <View style={styles.formGroup}>
                 <Text style={styles.label}>Phone Number</Text>
@@ -162,9 +205,9 @@ const ApplyJobScreen = ({ navigation, route }) => {
                 <Text style={styles.uploadButtonText}>Upload CV *</Text>
             </TouchableOpacity>
 
-            {selectedCV && (
-                <Text style={styles.selectedCVText}>Selected CV: {selectedCV.name}</Text>
-            )}
+                    {selectedCV && (
+                        <Text style={styles.selectedCVText}>Selected CV: {selectedCV.name}</Text>
+                    )}
 
             <TouchableOpacity
                 style={styles.submitButton}
@@ -271,6 +314,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#9e9e9e', 
         textAlign: 'center',
+    },
+    errorText: {
+        fontSize: 12,
+        color: 'red',
     },
 });
 
