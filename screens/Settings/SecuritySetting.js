@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Switch, Button, StyleSheet } from 'react-native';
-
+import { View, Text, TextInput, Switch, TouchableOpacity, StyleSheet } from 'react-native';
 
 const SecurityScreen = () => {
     const [password, setPassword] = useState('');
@@ -15,7 +14,7 @@ const SecurityScreen = () => {
             <View style={styles.section}>
                 <Text style={styles.sectionHeader}>Password</Text>
                 <View style={styles.inputContainer}>
-                    <Text>New Password:</Text>
+                    <Text style={styles.label}>New Password:</Text>
                     <TextInput
                         style={styles.input}
                         secureTextEntry
@@ -28,15 +27,20 @@ const SecurityScreen = () => {
             <View style={styles.section}>
                 <Text style={styles.sectionHeader}>Two-Factor Authentication</Text>
                 <View style={styles.switchContainer}>
-                    <Text>Enable Two-Factor Authentication</Text>
+                    <Text style={styles.switchText}>Enable Two-Factor Authentication</Text>
                     <Switch
-                        value={twoFactorAuth}
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={twoFactorAuth ? "#f5dd4b" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
                         onValueChange={(value) => setTwoFactorAuth(value)}
+                        value={twoFactorAuth}
                     />
                 </View>
             </View>
 
-            <Button title="Save Changes" onPress={handleSaveChanges} />
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveChanges}>
+                <Text style={styles.saveButtonText}>Save Changes</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -59,16 +63,37 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
     },
+    label: {
+        width: 120,
+        fontWeight: 'bold',
+    },
     input: {
         flex: 1,
         marginLeft: 10,
         borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
         padding: 8,
     },
     switchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+    },
+    switchText: {
+        flex: 1,
+        marginRight: 10,
+    },
+    saveButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#FFA500',
+        paddingVertical: 12,
+        borderRadius: 5,
+    },
+    saveButtonText: {
+        color: 'white',
+        fontSize: 16,
     },
 });
 

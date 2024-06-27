@@ -32,11 +32,10 @@ const JobProfile = ({ navigation, route }) => {
                 <View style={styles.card}>
                     <View style={styles.header}>
                         <Image source={{ uri: job.logo }} style={styles.logo} />
-                        <Text style={styles.headerDate}>Posted: {job.posted}</Text>
                     </View>
                     <Text style={styles.title}>{job.name}</Text>
                     <TouchableOpacity onPress={handleCompanyPress}>
-                        <Text style={styles.companyName}>{job.company}</Text>
+                        <Text style={styles.companyNameButton}>{job.company}</Text>
                     </TouchableOpacity>
 
 
@@ -69,9 +68,9 @@ const JobProfile = ({ navigation, route }) => {
                         <TouchableOpacity style={styles.applyButton} onPress={handleApplyPress}>
                             <Text style={styles.applyButtonText}>Apply Now</Text>
                         </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-         
+
             </View>
         </View>
     );
@@ -126,6 +125,20 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         marginBottom: 8,
     },
+    companyNameButton: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+        marginBottom: 8,
+        borderWidth: 1, // Add border
+        borderColor: '#FFA500', // Add border color
+        borderRadius: 20, // Add border radius
+        paddingVertical: 10, // Add padding
+        paddingHorizontal: 20, // Add padding
+        textAlign: 'center', // Center text
+        color: '#FFA500', // Change text color
+    },
+
     companySection: {
         flexDirection: 'row',
         justifyContent: 'space-between',

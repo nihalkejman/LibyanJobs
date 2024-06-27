@@ -52,6 +52,9 @@ const SettingsScreen = () => {
             case 'Privacy Policy':
                 navigation.navigate('PrivacyPolicySetting');
                 break;
+            case 'About the App':
+                navigation.navigate('AboutTheApp');
+                break;
             case 'Logout':
                 navigation.navigate('SplashScreen');
                 break;
@@ -77,8 +80,10 @@ const SettingsScreen = () => {
                     </TouchableOpacity>
                 ))}
 
-                {}
-                <View style={styles.option}>
+                {/* <TouchableOpacity
+                    style={styles.option}
+                    onPress={toggleDarkMode}
+                >
                     <View style={styles.optionContent}>
                         <Icon name="dark-mode" size={24} color="#555" />
                         <Text style={styles.optionText}>Dark Mode</Text>
@@ -90,7 +95,7 @@ const SettingsScreen = () => {
                         onValueChange={toggleDarkMode}
                         value={isDarkMode}
                     />
-                </View>
+                </TouchableOpacity> */}
             </ScrollView>
             <NavBar />
         </View>

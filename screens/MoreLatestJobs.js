@@ -4,13 +4,13 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { FontAwesome, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 
-const FeaturedJobs = ({ navigation }) => {
+const MoreLatestJobs = ({ navigation }) => {
     const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
         const fetchDataFromFirestore = async () => {
             try {
-                const jobsCollection = collection(db, 'featuredJobs');
+                const jobsCollection = collection(db, 'jobs');
                 const querySnapshot = await getDocs(jobsCollection);
                 const fetchedJobs = [];
 
@@ -18,7 +18,7 @@ const FeaturedJobs = ({ navigation }) => {
                     const jobData = doc.data();
                     const job = {
                         id: doc.id,
-                        title: jobData.name, // Include job title
+                        title: jobData.name,
                         ...jobData, // Include all job data
                     };
                     fetchedJobs.push(job);
@@ -34,13 +34,10 @@ const FeaturedJobs = ({ navigation }) => {
     }, []);
 
     const handleViewMore = (job) => {
-        navigation.navigate('MoreFeaturedJobs', { job });
-    };
-    const seeMore = (job) => {
-        navigation.navigate('JobProfile', { job });
+        navigation.navigate('Setting', { job });
     };
 
-    const JobItem = ({ job }) => (
+    const JobItem = ({ job, onViewMore }) => (
         <View style={styles.jobItem}>
             <Image source={{ uri: job.logo }} style={styles.logo} />
             <View style={styles.jobDetails}>
@@ -62,7 +59,7 @@ const FeaturedJobs = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={styles.moreButton} onPress={() => seeMore(job)}>
+            <TouchableOpacity style={styles.moreButton} onPress={() => onViewMore(job)}>
                 <Entypo name="chevron-right" size={24} color="#757575" />
             </TouchableOpacity>
         </View>
@@ -70,21 +67,15 @@ const FeaturedJobs = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Featured Jobs</Text>
+            <Text style={styles.header}>More Latest Jobs</Text>
             <FlatList
                 data={jobs}
-                renderItem={({ item }) => <JobItem job={item} />}
+                renderItem={({ item }) => <JobItem job={item} onViewMore={handleViewMore} />}
                 keyExtractor={item => item.id}
-                ListFooterComponent={() => (
-                    <TouchableOpacity style={styles.seeMoreButton} onPress={handleViewMore}>
-                        <Text style={styles.seeMoreText}>See More</Text>
-                    </TouchableOpacity>
-                )}
             />
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
@@ -145,17 +136,6 @@ const styles = StyleSheet.create({
     moreButton: {
         marginLeft: 'auto',
     },
-    seeMoreButton: {
-        alignItems: 'center',
-        backgroundColor: '#ECEFF1',
-        paddingVertical: 10,
-        marginHorizontal: 16,
-        borderRadius: 5,
-    },
-    seeMoreText: {
-        fontSize: 16,
-        color: '#333',
-    },
 });
 
-export default FeaturedJobs;
+export default MoreLatestJobs;

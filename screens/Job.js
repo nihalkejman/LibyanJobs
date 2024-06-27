@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 import AccountSetting from './Settings/AccountSetting'; 
-
+//
 const JobProfileScreen = ({ navigation }) => {
     const jobData = {
         title: 'Software Developer',

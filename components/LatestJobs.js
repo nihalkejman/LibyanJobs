@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from 'react
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { FontAwesome, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import CompanyLogo from '../assets/OIP.jpg'; // Import the local logo
 
 const LatestJobs = ({ navigation }) => {
     const [jobs, setJobs] = useState([]);
@@ -19,7 +20,8 @@ const LatestJobs = ({ navigation }) => {
                     const job = {
                         id: doc.id,
                         title: jobData.name,
-                        ...jobData, // Include all job data
+                        logo: CompanyLogo,
+                        ...jobData, 
                     };
                     fetchedJobs.push(job);
                 });
@@ -32,14 +34,17 @@ const LatestJobs = ({ navigation }) => {
 
         fetchDataFromFirestore();
     }, []);
-    
+
     const handleViewMore = (job) => {
+        navigation.navigate('MoreLatestJobs', { job });
+    };
+    const seeMore = (job) => {
         navigation.navigate('JobProfile', { job });
     };
 
-    const JobItem = ({ job, onViewMore }) => (
+    const JobItem = ({ job }) => (
         <View style={styles.jobItem}>
-            <Image source={{ uri: job.logo }} style={styles.logo} />
+            <Image source={job.logo} style={styles.logo} />
             <View style={styles.jobDetails}>
                 <Text style={styles.jobTitle}>{job.title}</Text>
                 <Text style={styles.jobInfo}>{job.location} - {job.type}</Text>
@@ -59,7 +64,7 @@ const LatestJobs = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={styles.moreButton} onPress={() => onViewMore(job)}>
+            <TouchableOpacity style={styles.moreButton} onPress={() => seeMore(job)}>
                 <Entypo name="chevron-right" size={24} color="#757575" />
             </TouchableOpacity>
         </View>

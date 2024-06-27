@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
-
+import NavBar from '../components/NavBar';
 const SavedJobsScreen = ({ navigation }) => {
     const [savedJobsData, setSavedJobsData] = useState([
         { id: '1', title: 'Software Engineer', company: 'Tech Co', location: 'San Francisco' },
         { id: '2', title: 'UX/UI Designer', company: 'Design Studio', location: 'New York' },
         { id: '3', title: 'Data Scientist', company: 'Data Corp', location: 'Chicago' },
+        { id: '4', title: 'Frontend Developer', company: 'Web Solutions', location: 'Los Angeles' },
+        { id: '5', title: 'Product Manager', company: 'Tech Innovations', location: 'Seattle' },
     ]);
 
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -36,7 +38,6 @@ const SavedJobsScreen = ({ navigation }) => {
     };
 
     const handleRefresh = () => {
-        
         setIsRefreshing(true);
         setTimeout(() => {
             setIsRefreshing(false);
@@ -62,20 +63,25 @@ const SavedJobsScreen = ({ navigation }) => {
                     }
                 />
             )}
+            <NavBar navigation={navigation} />
         </View>
+        
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
         backgroundColor: '#fff',
+        paddingVertical: 20,
+        paddingHorizontal: 16,
+        paddingTop: 50, // Adjust to prevent overlap with status bar
     },
     headerText: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 16,
+        textAlign: 'center',
     },
     emptyStateText: {
         fontSize: 18,
@@ -111,12 +117,14 @@ const styles = StyleSheet.create({
     },
     removeButton: {
         backgroundColor: '#FF6347',
-        padding: 8,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
         borderRadius: 6,
     },
     removeButtonText: {
         color: '#fff',
         fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
 

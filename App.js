@@ -1,4 +1,6 @@
 import React from 'react';
+// import 'react-native-gesture-handler';
+import { Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -22,7 +24,10 @@ import PackagesSetting from './screens/Settings/PackagesSetting.js';
 import HelpCentreSettings from './screens/Settings/HelpCentreSettings.js';
 import PrivacyPolicySetting from './screens/Settings/PrivacyPolicySetting.js';
 import JobProfileScreen from './screens/Job';
-
+import MoreLatestJobs from './screens/MoreLatestJobs.js';
+import MoreFeaturedJobs from './screens/MoreFeaturedJobs.js';
+import HeaderJobs from './components/HeaderJobs.js';
+import AboutTheApp from './screens/Settings/AboutTheApp.js';
 //
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,26 +67,27 @@ export default function App() {
   function SettingStack() {
     return (
       <Stack.Navigator initialRouteName="Setting" screenOptions={{ headerShown: true }}>
-        <Stack.Screen name="Setting" component={Setting} />
+        <Stack.Screen name="Setting" component={Setting} headerShown={false} />
         <Stack.Screen name="AccountSetting" options={{ title: 'AccountSetting' }}>
           {props => <AccountSetting {...props} onUpdateName={updateUserName} />}
         </Stack.Screen>
         <Stack.Screen name="SecuritySetting" component={SecuritySetting} options={{ title: 'SecuritySetting' }} />
-        <Stack.Screen name="DataprivacySetting" component={DataprivacySetting} options={{ title: 'DataprivacySetting' }} />
+        <Stack.Screen name="NotificationSetting" component={NotificationSetting} options={{ title: 'NotificationSetting' }} />
+        <Stack.Screen name="DataprivacySetting" component={DataprivacySetting} options={{ title: 'DataprivacySetting' }}  />
         <Stack.Screen name="PackagesSetting" component={PackagesSetting} options={{ title: 'PackagesSetting' }} />
         <Stack.Screen name="HelpCentreSettings" component={HelpCentreSettings} options={{ title: 'HelpCentreSettings' }} />
         <Stack.Screen name="PrivacyPolicySetting" component={PrivacyPolicySetting} options={{ title: 'PrivacyPolicySetting' }} />
+        <Stack.Screen name="AboutTheApp" component={AboutTheApp} options={{ title: 'AboutTheApp' }} />
       </Stack.Navigator>
     );
   }
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName="SplashScreen" screenOptions={{ headerShown: true }}>
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-        {/* <Stack.Screen name="AppTabs" component={AppTabs} /> */}
         <Stack.Screen name="JobProfile" component={JobProfile} />
         <Stack.Screen name="JobCompany" component={JobCompany} />
         <Stack.Screen name="JobScreen" options={{ title: 'JobScreen' }}>
@@ -90,13 +96,17 @@ export default function App() {
         <Stack.Screen name="SavedJobsScreen" component={SavedJobsScreen} options={{ title: 'SavedJobsScreen' }} />
         <Stack.Screen name="ApplyJobScreen" component={ApplyJobScreen} options={{ title: 'ApplyJobScreen' }} />
         <Stack.Screen name="Setting" component={SettingStack} options={{ title: 'Setting' }} />
-        <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ title: 'NotificationScreen' }} />
+        <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
         <Stack.Screen name="JobProfileScreen" component={JobProfileScreen} />
+        <Stack.Screen name="MoreLatestJobs" component={MoreLatestJobs} />
+        <Stack.Screen name="MoreFeaturedJobs" component={MoreFeaturedJobs} />
+        <Stack.Screen name="AccountSetting" component={AccountSetting} />
+        <Stack.Screen name="HeaderJobs" component={HeaderJobs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
+   
 
 
 

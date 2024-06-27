@@ -1,26 +1,57 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import RNPickerSelect from 'react-native-picker-select';
+import { useNavigation } from '@react-navigation/native';
 
-const HeaderJobs = () => {
+const HeaderJobs = ({ route }) => {
+    const navigation = useNavigation();
+    const updatedName = route.params?.updatedName || 'John Doe';
+
     const [jobLocation, setJobLocation] = useState('');
     const [jobCategory, setJobCategory] = useState('');
-    
 
-    const jobLocations = ['New York', 'Los Angeles', 'San Francisco', 'Chicago', 'Miami'].sort();
-    const jobCategories = ['Technology', 'Healthcare', 'Education', 'Finance', 'Hospitality'].sort();
+    const jobLocations = [
+        'New York',
+        'Los Angeles',
+        'San Francisco',
+        'Chicago',
+        'Miami',
+        'Seattle',
+        'Boston',
+        'Austin',
+    ].sort();
+    const jobCategories = [
+        'Technology',
+        'Healthcare',
+        'Education',
+        'Finance',
+        'Hospitality',
+        'Marketing',
+        'Engineering',
+    ].sort();
+
+    const handleSavedJobsPress = () => {
+        navigation.navigate('SavedJobsScreen');
+    };
+
+    const handleProfilePress = () => {
+        navigation.navigate('AccountSetting', {
+            onUpdateName: route.params?.onUpdateName,
+        });
+    };
 
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
             <View style={styles.header}>
-                <TouchableOpacity style={styles.profileSection}>
+                <TouchableOpacity style={styles.profileSection} onPress={handleProfilePress}>
                     <Icon name="user-circle-o" size={24} color="black" />
-                    <Text style={styles.profileText}>Nihal Kejman</Text>
+                    <Text style={styles.profileText}>{updatedName}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.savedJobsSection}>
+                <TouchableOpacity style={styles.savedJobsSection} onPress={handleSavedJobsPress}>
                     <Icon name="bookmark-o" size={24} color="red" />
-                    <Text style={styles.savedJobsText}>My saved jobs</Text>
+                    <Text style={styles.savedJobsText}>My Saved Jobs</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.searchSection}>
@@ -54,7 +85,6 @@ const HeaderJobs = () => {
         </View>
     );
 };
-
 const pickerSelectStyles = StyleSheet.create({
     inputIOS: {
         fontSize: 16,
@@ -64,7 +94,7 @@ const pickerSelectStyles = StyleSheet.create({
         borderColor: '#DDDDDD',
         borderRadius: 5,
         color: 'black',
-        paddingRight: 30, 
+        paddingRight: 30,
     },
     inputAndroid: {
         fontSize: 16,
@@ -74,14 +104,14 @@ const pickerSelectStyles = StyleSheet.create({
         borderColor: '#DDDDDD',
         borderRadius: 5,
         color: 'black',
-        paddingRight: 30, 
+        paddingRight: 30,
     },
 });
-
+//
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#F8F8F8',
-        paddingTop: 10,
+        backgroundColor: '#FFFFFF',
+        paddingTop: StatusBar.currentHeight + 50,
         paddingBottom: 20,
     },
     header: {
@@ -111,26 +141,27 @@ const styles = StyleSheet.create({
     searchSection: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F8F8F8',
         borderRadius: 10,
-        padding: 5,
         paddingHorizontal: 10,
         marginHorizontal: 15,
+        marginBottom: 15,
     },
     searchIcon: {
         marginRight: 10,
     },
     searchInput: {
         flex: 1,
+        paddingVertical: 8,
     },
     filterContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 15,
         paddingHorizontal: 15,
     },
     filterSection: {
         flex: 1,
+        marginLeft: 10,
     },
 });
 

@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Alert,
     KeyboardAvoidingView, SafeAreaView, StyleSheet, Dimensions} from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { db, setDoc, doc, auth, storage} from '../firebaseConfig';
+import { Platform } from 'react-native';
 
 
 const ApplyJobScreen = ({ navigation, route }) => {
@@ -64,7 +65,6 @@ const ApplyJobScreen = ({ navigation, route }) => {
             return; // Stop submission if validation fails
         }
 
-        
         try {
             let selectedCVUrl = ''; // Initialize selectedCVUrl variable
 
@@ -74,7 +74,7 @@ const ApplyJobScreen = ({ navigation, route }) => {
                 await fileRef.put(selectedCV);
                 selectedCVUrl = await fileRef.getDownloadURL(); // Set selectedCVUrl to the URL of the uploaded CV file
             }
-            
+
             // Construct job application data
             const formData = {
                 userId,
@@ -94,7 +94,15 @@ const ApplyJobScreen = ({ navigation, route }) => {
             await setDoc(docRef, formData); // Set the document data
 
             // Show success message
-            Alert.alert('Application Submitted!', 'Your application has been submitted successfully.');
+            Alert.alert('Application Submitted!', 'Your application has been submitted successfully.', [
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        // Navigate back to JobScreen
+                        navigation.navigate('JobScreen');
+                    },
+                },
+            ]);
 
             // Reset form fields
             setFirstName('');
@@ -110,6 +118,7 @@ const ApplyJobScreen = ({ navigation, route }) => {
             Alert.alert('Error', 'Failed to submit application. Please try again later.');
         }
     };
+
 
 
     return (
